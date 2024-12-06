@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=4,5,6,7 python -m torch.distributed.run --master_port 29501 --nproc_per_node=4  /workspace/LAVIS-main/train.py --cfg-path /workspace/LAVIS-main/lavis/projects/blip2/train/caption_coco_ft4_eval.yaml

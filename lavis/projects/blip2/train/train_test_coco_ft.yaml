@@ -1,0 +1,84 @@
+# 用于弄懂代码的测试配置
+
+model:
+  arch: blip2_opt
+  model_type: caption_coco_opt2.7b
+  load_finetuned: False
+  use_grad_checkpoint: True
+  freeze_vit: False
+
+datasets:
+  coco_caption: # name of the dataset builder
+    vis_processor:
+        train:
+          name: "blip2_image_train"
+          image_size: 364
+        eval:
+          name: "blip_image_eval"
+          image_size: 364
+    text_processor:
+        train:
+          name: "blip_caption"
+          prompt: "a photo of "
+        eval:
+          name: "blip_caption"
+    build_info:
+      annotations:
+        train:
+          storage: /workspace/LAVIS-main/cache/coco/coco/annotations/coco_karpathy_train_2.json
+          url: /workspace/LAVIS-main/cache/coco/coco/annotations/coco_karpathy_train_2.json
+        val:
+          storage:  /workspace/LAVIS-main/cache/coco/coco/annotations/coco_karpathy_val.json
+          url: /workspace/LAVIS-main/cache/coco/coco/annotations/coco_karpathy_val.json
+        test:
+          storage: /workspace/LAVIS-main/cache/coco/coco/annotations/coco_karpathy_test.json
+          url: /workspace/LAVIS-main/cache/coco/coco/annotations/coco_karpathy_test.json
+      images:
+          storage: "/workspace/Dataset/OpenDataLab___COCO_2014/raw"  # 添加一个顶层storage
+          train:
+            storage: /workspace/Dataset/OpenDataLab___COCO_2014/raw/train2
+          val:
+            storage: /workspace/Dataset/OpenDataLab___COCO_2014/raw/val2014
+          test:
+            storage: /workspace/Dataset/OpenDataLab___COCO_2014/raw/test2014
+
+run:
+  task: captioning
+  # optimizer
+  lr_sched: "linear_warmup_cosine_lr" # 学习率调度器
+  init_lr: 1e-5 # 初始学习率
+  min_lr: 0 # 最小学习率
+  warmup_lr: 1e-8 # 学习率预热
+  warmup_steps: 1000 # 学习率预热步数
+  weight_decay: 0.05  #权重衰减
+  max_epoch: 1 #训练的轮数
+  batch_size_train: 1 #训练的batch size
+  batch_size_eval: 16 #评估的batch size
+  num_workers: 16 #数据加载的进程数
+  accum_grad_iters: 1 #梯度累积的步数
+  max_len: 30 #输入的最大长度
+  min_len: 8 # 输出的最小长度
+  num_beams: 5  # 束搜索的beam数
+
+  seed: 42 #随机种子
+
+  output_dir: "/workspace/Log/Test" #日志输出路径
+  log_every_n_steps: 1    # 每步都输出日志
+  eval_every_n_epochs: 1  # 每轮都进行评估
+  save_freq: 1 # 保存频率
+  log_freq: 1 # 日志输出频率
+
+  amp: True #是否使用混合精度训练
+  resume_ckpt_path: null #是否从checkpoint恢复
+
+  evaluate: False #是否评估
+  train_splits: ["train"] #训练数据集
+  valid_splits: ["val"] #验证数据集
+  test_splits: ["test"] #测试数据集
+
+  device: "cuda" #训练设备
+  world_size: 8 #总进程数,需要对齐GPU数
+  dist_url: "env://" #分布式训练的url
+  distributed: True #是否分布式训练
+  use_deepspeed: True #是否使用deepspeed
+  dsconfig_path: /workspace/LAVIS-main/lavis/configs/ds_config_zero3.json

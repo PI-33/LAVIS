@@ -1,0 +1,2 @@
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 HF_ENDPOINT=https://hf-mirror.com python -m torch.distributed.run --master_port 29501 --nproc_per_node=8 /workspace/LAVIS-main/train.py --cfg-path /workspace/LAVIS-main/lavis/projects/blip2/train/train_test_coco_ft.yaml
+# CUDA_VISIBLE_DEVICES=5 HF_ENDPOINT=https://hf-mirror.com python /workspace/LAVIS-main/train.py --cfg-path /workspace/LAVIS-main/lavis/projects/blip2/train/train_test_coco_ft.yaml
